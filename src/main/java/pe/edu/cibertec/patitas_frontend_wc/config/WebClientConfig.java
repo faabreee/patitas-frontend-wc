@@ -30,4 +30,29 @@ public class WebClientConfig {
                 .build();
     }
 
+    @Bean
+    public WebClient webClientFinanzas(WebClient.Builder builder) {
+        // configuracion timeout en HttpClient Netty
+        HttpClient httpClient = HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000) // timeout de conexion
+                .responseTimeout(Duration.ofSeconds(10)) // timeout de lectura de toda la respuesta
+                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))); // timeout de lectura de cada paquete
+        return builder
+                .baseUrl("http://localhost:8081/autenticacion")
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+    }
+    @Bean
+    public WebClient webClientReportes(WebClient.Builder builder) {
+        // configuracion timeout en HttpClient Netty
+        HttpClient httpClient = HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000) // timeout de conexion
+                .responseTimeout(Duration.ofSeconds(10)) // timeout de lectura de toda la respuesta
+                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))); // timeout de lectura de cada paquete
+        return builder
+                .baseUrl("http://localhost:8081/autenticacion")
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+    }
+
 }
