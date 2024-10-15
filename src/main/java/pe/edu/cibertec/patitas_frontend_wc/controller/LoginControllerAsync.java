@@ -81,4 +81,30 @@ public class LoginControllerAsync {
             return new LogoutResponseDTO(false, new Date(), "Error: Ocurrio un problema con el logut");
         }
     }
+
+    // Logout reactivo - exament2
+    @PostMapping("/logout-async")
+    public Mono<LogoutResponseDTO> logoutAsync(@RequestBody LogoutRequestDTO logoutRequestDTO) {
+
+        try {
+            return webClientAutenticacion.post()
+                    .uri("/logout")
+                    .body(Mono.just(logoutRequestDTO), LogoutRequestDTO.class)
+                    .retrieve()
+                    .bodyToMono(LogoutResponseDTO.class)
+                    .flatMap(response -> {
+                        if(response.resultado()){
+                            return Mono.just(new LogoutResponseDTO( response.resultado(), new Date(), response.mensajeError()));
+                        } else {
+                            return Mono.just(new LogoutResponseDTO( false, new Date(), "Error: Logout fallido"));
+                        }
+                    });
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+            return Mono.just(new LogoutResponseDTO(false, new Date(), "Error: Ocurrio un problema con el logout"));
+        }
+    }
+
+
+
 }
